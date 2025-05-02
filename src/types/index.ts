@@ -58,7 +58,7 @@ export interface PurchaseDataModel {
   validatePhone(phone: string): boolean;
 }
 
-interface Modal {
+export interface Modal {
   onCloseClick(callback: () => void): void;
   show(): void;
   hide(): void;
