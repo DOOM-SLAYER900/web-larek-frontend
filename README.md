@@ -47,7 +47,6 @@ yarn build
 Product: Хранит данные о товаре. { id: number, title: string, price: number, category: string, description: string, image: string }
 Cart: Хранит список товаров в корзине и общую стоимость. Предоставляет методы добавления, удаления и получения товаров. { items: Product[], totalPrice: number }
 PurchaseData: Хранит данные, введенные пользователем при оформлении заказа и валидирует их. { paymentMethod: string, userAddress: string, userEmail: string, userPhone: string }
-ErrorManager: Управляет сообщениями об ошибках, предоставляя их в унифицированном формате.
 
 2. Отображения:
 MainView: Отображает главную страницу с каталогом товаров.
