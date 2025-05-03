@@ -1,5 +1,7 @@
+import { ApiListResponse } from "../components/base/api";
+
 export interface ApiProduct {
-  id: number;
+  id: string;
   title: string;
   price: number;
   category: string;
@@ -7,18 +9,12 @@ export interface ApiProduct {
   image: string;
 }
 
-export interface ApiListResponse<T> {
-  total: number;
-  items: T[];
-}
-
 export interface ApiClient {
   getProducts(): Promise<ApiListResponse<ApiProduct>>;
 }
 
-
 export interface Product {
-  id: number;
+  id: string;
   title: string;
   price: number;
   category: string;
@@ -92,6 +88,11 @@ export interface PurchaseSecondView extends Modal {
   showError(message: string): void;
 }
 
+export interface SuccessView extends Modal {
+  renderSuccess(orderData: {totalPrice: number }): void;
+  onCloseClick(callback: () => void): void;
+}
+
 export interface Presenter<V, M> {
   view: V;
   model: M;
@@ -102,7 +103,6 @@ export enum Event {
   AddToCart = 'addToCart',
   RemoveFromCart = 'removeFromCart',
   Checkout = 'checkout',
-  PurchaseDataSubmitted = 'purchaseDataSubmitted',
   PaymentSuccess = 'paymentSuccess',
   CloseProductDetail = 'closeProductDetail',
   CloseCart = 'closeCart',
@@ -115,7 +115,6 @@ export interface EventPayload {
   [Event.AddToCart]: { product: Product };
   [Event.RemoveFromCart]: { productId: number };
   [Event.Checkout]: {};
-  [Event.PurchaseDataSubmitted]: PurchaseData;
   [Event.PaymentSuccess]: {};
   [Event.CloseProductDetail]: {};
   [Event.CloseCart]: {};
