@@ -11,6 +11,7 @@ export interface ApiProduct {
 
 export interface ApiClient {
   getProducts(): Promise<ApiListResponse<ApiProduct>>;
+  submitOrder(order: PurchaseData): Promise<void>;
 }
 
 export interface Product {
@@ -22,16 +23,27 @@ export interface Product {
   image: string;
 }
 
-export interface CartItem {
-  product: Product;
-  counter: number;
+export interface BasketModel {
+  items: { [productId: number]: Product };
+  totalPrice: number;
+  addProduct(product: Product): void;
+  removeProduct(productId: number): void;
+  getTotalPrice(): number;
+  getItems(): Product[];
 }
 
 export interface PurchaseData {
-  paymentMethod: string;
-  userAddress: string;
-  userEmail: string;
-  userPhone: string;
+  setPaymentMethod(method: string): void;
+  setUserAddress(address: string): void;
+  setUserEmail(email: string): void;
+  setUserPhone(phone: string): void;
+  getPaymentMethod(): string | null;
+  getUserAddress(): string | null;
+  getUserEmail(): string | null;
+  getUserPhone(): string | null;
+  isValid(): boolean;
+  validateEmail(): boolean;
+  validatePhone(): boolean;
 }
 
 export interface ProductModel {
@@ -39,58 +51,85 @@ export interface ProductModel {
   getProduct(id: number): Promise<Product | undefined>;
 }
 
-export interface CartModel {
-  getCartItems(): CartItem[];
-  addToCart(product: Product): void;
-  removeFromCart(productId: number): void;
-  getTotalPrice(): number;
-}
-
-export interface PurchaseDataModel {
-  setPurchaseData(data: PurchaseData): void;
-  getPurchaseData(): PurchaseData | null;
-  validateAddress(address: string): boolean;
-  validateEmail(email: string): boolean;
-  validatePhone(phone: string): boolean;
-}
-
 export interface Modal {
+  modalElement: HTMLElement;
+  contentElement: HTMLElement;
+  onCloseCallback: () => void;
   onCloseClick(callback: () => void): void;
+  setContent(content: HTMLElement): void;
   show(): void;
   hide(): void;
 }
 
 export interface MainView {
-  renderProducts(products: Product[]): void;
+  productsContainer: HTMLElement;
+  basketButton: HTMLButtonElement;
+  basketElementCounter: HTMLElement;
+  renderProducts(productElements: HTMLElement[]): void;
   onProductClick(callback: (productId: number) => void): void;
   setCartItemsCount(count: number): void;
 }
 
-export interface ProductDetailView extends Modal {
+export interface ProductDetailView {
+  modal: Modal;
+  titleElement: HTMLInputElement;
+  imageElement: HTMLInputElement;
+  descriptionElement: HTMLInputElement;
+  categoryElement: HTMLInputElement;
+  priceElement: HTMLInputElement;
+  addToCartButton: HTMLInputElement;
+  onAddToCartCallback: () => void;
+  productTemplate: HTMLTemplateElement;
   renderProduct(product: Product): void;
-  onAddToCartClick(callback: () => void): void;
+  onAddToBasketClick(callback: () => void): void;
+  show(product: Product): void;
+  hide(): void;
 }
 
-export interface CartView extends Modal {
-  renderCartItems(cartItems: CartItem[]): void;
-  renderTotalPrice(totalPrice: number): void;
+export interface BasketView {
+  modal: Modal;
+  BasketItemsContainer: HTMLElement;
+  totalPriceElement: HTMLElement;
+  checkoutButton: HTMLButtonElement;
+  onRemoveItemCallback: (productId: number) => void;
+  onCheckoutCallback: () => void;
+  BasketItemTemplate: HTMLTemplateElement;
+  basketModel: BasketModel;
+  renderBasketItems(BasketItems: Product[]): void;
+  renderTotalPrice(): void;
   onRemoveItemClick(callback: (productId: number) => void): void;
   onCheckoutClick(callback: () => void): void;
+  show(): void;
+  hide(): void;
 }
 
 export interface PurchaseFirstView extends Modal {
+  paymentMethodOnline: HTMLInputElement;
+  paymentMethodCash: HTMLInputElement;
+  addressInput: HTMLInputElement;
+  errorElement: HTMLElement;
   onNextClick(callback: (data: PurchaseData) => void): void;
   showError(message: string): void;
+  show(): void;
+  hide(): void;
 }
 
 export interface PurchaseSecondView extends Modal {
+  emailInput: HTMLInputElement;
+  phoneInput: HTMLInputElement;
+  errorElement: HTMLElement;
   onPayClick(callback: (data: PurchaseData) => void): void;
   showError(message: string): void;
+  show(): void;
+  hide(): void;
 }
 
-export interface SuccessView extends Modal {
-  renderSuccess(orderData: {totalPrice: number }): void;
-  onCloseClick(callback: () => void): void;
+export interface SuccessView {
+  modal: Modal;
+  descriptionPrice: HTMLElement;
+  renderSuccess(orderData: { totalPrice: number }): void;
+  show(orderData: { totalPrice: number }): void;
+  hide(): void;
 }
 
 export interface Presenter<V, M> {
@@ -100,24 +139,24 @@ export interface Presenter<V, M> {
 
 export enum Event {
   ProductClicked = 'productClicked',
-  AddToCart = 'addToCart',
-  RemoveFromCart = 'removeFromCart',
+  AddToBasket = 'addToBasket',
+  RemoveFromBasket = 'removeFromBasket',
   Checkout = 'checkout',
   PaymentSuccess = 'paymentSuccess',
   CloseProductDetail = 'closeProductDetail',
-  CloseCart = 'closeCart',
+  CloseBasket = 'closeBasket',
   ClosePurchaseFirst = 'closePurchaseFirst',
   ClosePurchaseSecond = 'closePurchaseSecond',
 }
 
 export interface EventPayload {
   [Event.ProductClicked]: { productId: number };
-  [Event.AddToCart]: { product: Product };
-  [Event.RemoveFromCart]: { productId: number };
+  [Event.AddToBasket]: { product: Product };
+  [Event.RemoveFromBasket]: { productId: number };
   [Event.Checkout]: {};
   [Event.PaymentSuccess]: {};
   [Event.CloseProductDetail]: {};
-  [Event.CloseCart]: {};
+  [Event.CloseBasket]: {};
   [Event.ClosePurchaseFirst]: {};
   [Event.ClosePurchaseSecond]: {};
 }
