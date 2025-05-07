@@ -11,7 +11,7 @@ export interface ApiProduct {
 
 export interface ApiClient {
   getProducts(): Promise<ApiListResponse<ApiProduct>>;
-  submitOrder(order: PurchaseData): Promise<void>;
+  submitOrder(order: IOrder): Promise<void>;
 }
 
 export interface Product {
@@ -32,8 +32,22 @@ export interface BasketModel {
   getItems(): Product[];
 }
 
+export enum PaymentMethod {
+  Online = 'Online',
+  Cash = 'cash',
+}
+
+export interface IOrder {
+  address: string;
+  email: string;
+  phone: string;
+  payment: PaymentMethod;
+  items: string[];
+  total: number
+}
+
 export interface PurchaseData {
-  setPaymentMethod(method: string): void;
+  setPaymentMethod(method: PaymentMethod): void;
   setUserAddress(address: string): void;
   setUserEmail(email: string): void;
   setUserPhone(phone: string): void;
