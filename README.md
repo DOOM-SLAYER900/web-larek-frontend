@@ -62,6 +62,15 @@ ApiClient:
 getProducts(): Promise<ApiListResponse<ApiProduct>> — асинхронный метод для получения списка товаров из API. Возвращает Promise, который разрешается в объект ApiListResponse<ApiProduct>.
 submitOrder(order: IOrder): Promise<void> — Отправить заказ на сервер.
 
+IOrder:
+Описание: Интерфейс для объекта order.
+address: string; — Адрес доставки.
+email: string; — Электронная почта пользователя.
+phone: string; — Телефон пользователя.
+payment: PaymentMethod; — Способ оплаты.
+items: string[]; — Массив идентификаторов товаров, которые пользователь хочет заказать.
+total: number; - Общая стоимость заказа.
+
 ApiListResponse<Type>:
 Описание: Интерфейс для представления ответа API, содержащего список объектов типа Type и общее количество элементов.
 Поля:
@@ -106,7 +115,7 @@ getPaymentMethod(): string | null — возвращает способ опла
 getUserAddress(): string | null — возвращает адрес пользователя.
 getUserEmail(): string | null — возвращает электронную почту пользователя.
 getUserPhone(): string | null — возвращает телефон пользователя.
-toOrder(): IOrder — преобразует данные PurchaseData в формат IOrder. Собирает информацию из полей ввода (PurchaseData) и данных корзины (BasketModel) и возвращает объект IOrder.
+преобразует данные PurchaseData в формат IOrder. Собирает информацию из полей PurchaseData и данных корзины (BasketModel) и возвращает объект типа IOrder.
 isValid(): boolean — проверяет, заполнены ли все необходимые поля и прошли ли валидацию.
 validateEmail(): boolean — проверяет корректность формата электронной почты.
 validatePhone(): boolean — проверяет корректность формата телефона.
